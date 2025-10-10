@@ -20,9 +20,21 @@ public static class HallwayDirectionExtensions
         { HallwayDirection.Left, Color.blue },
         { HallwayDirection.Right, Color.yellow }
     };
-    
+
     public static Color GetColor(this HallwayDirection direction)
     {
         return DIRECTION_COLOR_MAP.TryGetValue(direction, out Color color) ? color : DIRECTION_COLOR_MAP[HallwayDirection.Undefined];
+    }
+    
+    public static HallwayDirection GetOppositeDirection(this HallwayDirection direction)
+    {
+        Dictionary<HallwayDirection, HallwayDirection> oppositeDirectionMap = new Dictionary<HallwayDirection, HallwayDirection>
+        {
+            { HallwayDirection.Top, HallwayDirection.Bottom },
+            { HallwayDirection.Bottom, HallwayDirection.Top },
+            { HallwayDirection.Left, HallwayDirection.Right },
+            { HallwayDirection.Right, HallwayDirection.Left },
+        };
+        return oppositeDirectionMap.TryGetValue(direction, out HallwayDirection oppositeDirection) ? oppositeDirection : HallwayDirection.Undefined;
     }
 }
