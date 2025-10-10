@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class LayoutGeneratorRooms : MonoBehaviour
 {
@@ -12,19 +13,32 @@ public class LayoutGeneratorRooms : MonoBehaviour
     [SerializeField] private GameObject m_levelLayoutDisplay;
     [SerializeField] private List<Hallway> m_openDoorways;
 
-    System.Random m_random;
+    private System.Random m_random;
+    private Level m_level;
 
     [ContextMenu("Generate Level Layout")]
     public void GenerateLevel()
     {
         m_random = new System.Random();
         m_openDoorways = new List<Hallway>();
+        m_level = new Level(m_width, m_length);
         var roomRect = GetStartRoomRect();
         Debug.Log(roomRect);
         Room room = new Room(roomRect);
         List<Hallway> hallways = room.CalculateAllPossibleDoorways(room.Area.width, room.Area.height, 1);
         hallways.ForEach(h => h.StartRoom = room);
         hallways.ForEach(h => m_openDoorways.Add(h));
+        m_level.AddRoom(room);
+
+        Room testRoom1 = new Room(new RectInt(3, 6, 6, 10));
+        Room testRoom2 = new Room(new RectInt(15, 4, 10, 12));
+        Hallway testHallway = new Hallway(HallwayDirection.Right, new Vector2Int(6, 3), testRoom1);
+        testHallway.EndPosition = new Vector2Int(0, 5);
+        testHallway.EndRoom = testRoom2;
+        m_level.AddRoom(testRoom1);
+        m_level.AddRoom(testRoom2);
+        m_level.AddHallway(testHallway);
+
         DrawLayout(roomRect);
     }
 
@@ -51,6 +65,10 @@ public class LayoutGeneratorRooms : MonoBehaviour
         layoutTexture.Reinitialize(m_width, m_length);
         m_levelLayoutDisplay.transform.localScale = new Vector3(m_width, m_length, 1);
         layoutTexture.FillWithColor(Color.black);
+
+        Array.ForEach(m_level.Rooms, room => layoutTexture.DrawRectangle(room.Area, Color.white));
+        Array.ForEach(m_level.Hallways, hallway => layoutTexture.DrawLine(hallway.StartPositionAbsolute, hallway.EndPositionAbsolute, Color.white));
+
         layoutTexture.DrawRectangle(roomCandidateRect, Color.white);
 
         foreach (Hallway hallway in m_openDoorways)
