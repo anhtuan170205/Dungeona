@@ -55,7 +55,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
 
         foreach (Hallway hallway in m_openDoorways)
         {
-            layoutTexture.SetPixel(hallway.StartPositionAbsolute.x, hallway.StartPositionAbsolute.y, Color.green);
+            layoutTexture.SetPixel(hallway.StartPositionAbsolute.x, hallway.StartPositionAbsolute.y, hallway.StartDirection.GetColor());
         }
 
         layoutTexture.SaveAsset();
