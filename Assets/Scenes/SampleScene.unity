@@ -566,12 +566,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_width: 64
   m_length: 64
-  m_minRoomWidth: 3
-  m_maxRoomWidth: 15
-  m_minRoomLength: 3
-  m_maxRoomLength: 20
+  m_minRoomWidth: 5
+  m_maxRoomWidth: 10
+  m_minRoomLength: 5
+  m_maxRoomLength: 15
   m_minCorridorLength: 3
   m_maxCorridorLength: 5
+  m_maxRoomCount: 15
   m_levelLayoutDisplay: {fileID: 1099883943}
 --- !u!4 &2123062208
 Transform:

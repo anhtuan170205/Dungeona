@@ -127,6 +127,8 @@ public class LayoutGeneratorRooms : MonoBehaviour
         Vector2Int roomCandidatePosition = CalculateRoomPosition(selectedEntryway, roomCandidateRect.width, roomCandidateRect.height, distance, selectedExit.StartPosition);
         roomCandidateRect.position = roomCandidatePosition;
 
+        if (!IsRoomCandidateValid(roomCandidateRect)) { return null; }
+
         Room newRoom = new Room(roomCandidateRect);
         selectedEntryway.EndRoom = newRoom;
         selectedEntryway.EndPosition = selectedExit.StartPosition;
@@ -155,5 +157,37 @@ public class LayoutGeneratorRooms : MonoBehaviour
             m_openDoorways.Remove(selectedEntryway);
             m_openDoorways.AddRange(newOpenHallways);
         }
+    }
+
+    private bool IsRoomCandidateValid(RectInt roomCandidateRect)
+    {
+        RectInt levelRect = new RectInt(1, 1, m_width - 2, m_length - 2);
+        return levelRect.Contains(roomCandidateRect) && !IsRoomOverlapping(roomCandidateRect, m_level.Rooms, m_level.Hallways, 1);
+    }
+
+    private bool IsRoomOverlapping(RectInt roomCandidateRect, Room[] existingRooms, Hallway[] existingHallways, int minRoomDistance)
+    {
+        RectInt paddedRoomRect = new RectInt
+        {
+            x = roomCandidateRect.x - minRoomDistance,
+            y = roomCandidateRect.y - minRoomDistance,
+            width = roomCandidateRect.width + 2 * minRoomDistance,
+            height = roomCandidateRect.height + 2 * minRoomDistance
+        };
+        foreach (Room room in existingRooms)
+        {
+            if (paddedRoomRect.Overlaps(room.Area))
+            {
+                return true;
+            }
+        }
+        foreach (Hallway hallway in existingHallways)
+        {
+            if (paddedRoomRect.Overlaps(hallway.Area))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
