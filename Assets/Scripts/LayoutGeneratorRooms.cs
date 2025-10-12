@@ -35,6 +35,13 @@ public class LayoutGeneratorRooms : MonoBehaviour
         Hallway selectedExit = SelectHallwayCandidate(new RectInt(0, 0, 5, 7), selectedEntryway);
         Debug.Log(selectedExit.StartPosition);
         Debug.Log(selectedExit.StartDirection);
+        Vector2Int roomCandidatePosition = CalculateRoomPosition(selectedEntryway, 5, 7, 3, selectedExit.StartPosition);
+        Room secondRoom = new Room(new RectInt(roomCandidatePosition.x, roomCandidatePosition.y, 5, 7));
+        selectedEntryway.EndRoom = secondRoom;
+        selectedEntryway.EndPosition = selectedExit.StartPosition;
+
+        m_level.AddRoom(secondRoom);
+        m_level.AddHallway(selectedEntryway);
 
         DrawLayout(selectedEntryway ,roomRect);
     }
@@ -85,5 +92,30 @@ public class LayoutGeneratorRooms : MonoBehaviour
         HallwayDirection requiredDirection = entryway.StartDirection.GetOppositeDirection();
         List<Hallway> filteredHallwayCandidates = hallwayCandidates.Where(hallwayCandidate => hallwayCandidate.StartDirection == requiredDirection).ToList();
         return filteredHallwayCandidates.Count > 0 ? filteredHallwayCandidates[m_random.Next(filteredHallwayCandidates.Count)] : null;
+    }
+
+    private Vector2Int CalculateRoomPosition(Hallway entryway, int roomWidth, int roomLength, int distance, Vector2Int endPosition)
+    {
+        Vector2Int roomPosition = entryway.StartPositionAbsolute;
+        switch (entryway.StartDirection)
+        {
+            case HallwayDirection.Left:
+                roomPosition.x -= distance + roomWidth;
+                roomPosition.y -= endPosition.y;
+                break;
+            case HallwayDirection.Top:
+                roomPosition.x -= endPosition.x;
+                roomPosition.y = distance + 1;
+                break;
+            case HallwayDirection.Right:
+                roomPosition.x += distance + 1;
+                roomPosition.y -= endPosition.y;
+                break;
+            case HallwayDirection.Bottom:
+                roomPosition.x -= endPosition.x;
+                roomPosition.y -= distance + roomLength;
+                break;
+        }
+        return roomPosition;
     }
 }
