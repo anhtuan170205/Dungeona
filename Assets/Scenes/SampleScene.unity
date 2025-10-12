@@ -564,15 +564,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9c60e311487c4b00836b1418fa627c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_seed: 775633207
   m_width: 64
   m_length: 64
-  m_minRoomWidth: 5
-  m_maxRoomWidth: 10
-  m_minRoomLength: 5
+  m_minRoomWidth: 7
+  m_maxRoomWidth: 15
+  m_minRoomLength: 7
   m_maxRoomLength: 15
+  m_doorDistanceFromEdge: 1
   m_minCorridorLength: 3
   m_maxCorridorLength: 5
-  m_maxRoomCount: 15
+  m_maxRoomCount: 12
+  m_minRoomDistance: 2
   m_levelLayoutDisplay: {fileID: 1099883943}
 --- !u!4 &2123062208
 Transform:
