@@ -13,6 +13,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
     [SerializeField] private int m_maxRoomLength = 10;
     [SerializeField] private int m_minCorridorLength = 3;
     [SerializeField] private int m_maxCorridorLength = 5;
+    [SerializeField] private int m_maxRoomCount = 15;
     [SerializeField] private GameObject m_levelLayoutDisplay;
     [SerializeField] private List<Hallway> m_openDoorways;
 
@@ -34,10 +35,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
         m_level.AddRoom(room);
 
         Hallway selectedEntryway = m_openDoorways[m_random.Next(m_openDoorways.Count)];
-        Room newRoom = ConstructAdjacentRoom(selectedEntryway);
-
-        m_level.AddRoom(newRoom);
-        m_level.AddHallway(selectedEntryway);
+        AddRooms();
 
         DrawLayout(selectedEntryway ,roomRect);
     }
@@ -133,5 +131,29 @@ public class LayoutGeneratorRooms : MonoBehaviour
         selectedEntryway.EndRoom = newRoom;
         selectedEntryway.EndPosition = selectedExit.StartPosition;
         return newRoom;
+    }
+
+    private void AddRooms()
+    {
+        while (m_openDoorways.Count > 0 && m_level.Rooms.Length < m_maxRoomCount)
+        {
+            Hallway selectedEntryway = m_openDoorways[m_random.Next(0, m_openDoorways.Count)];
+            Room newRoom = ConstructAdjacentRoom(selectedEntryway);
+
+            if (newRoom == null)
+            {
+                m_openDoorways.Remove(selectedEntryway);
+                continue;
+            }
+            m_level.AddRoom(newRoom);
+            m_level.AddHallway(selectedEntryway);
+
+            selectedEntryway.EndRoom = newRoom;
+            List<Hallway> newOpenHallways = newRoom.CalculateAllPossibleDoorways(newRoom.Area.width, newRoom.Area.height, 1);
+            newOpenHallways.ForEach(h => h.StartRoom = newRoom);
+
+            m_openDoorways.Remove(selectedEntryway);
+            m_openDoorways.AddRange(newOpenHallways);
+        }
     }
 }
