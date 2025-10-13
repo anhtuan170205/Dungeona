@@ -14,20 +14,28 @@ public class Room
     public List<Hallway> CalculateAllPossibleDoorways(int width, int length, int minDistanceFromEdge)
     {
         List<Hallway> hallwayCandidates = new List<Hallway>();
+        int top = length - 1;
+        //int minX = minDistanceFromEdge;
+        //int maxX = width - minDistanceFromEdge;
 
-        int bottom = length - 1;
-        int minX = minDistanceFromEdge;
-        int maxX = width - minDistanceFromEdge;
-        
-        int right = width - 1;
-        int minY = minDistanceFromEdge;
-        int maxY = length - minDistanceFromEdge;
+        //instead this to prevent small rooms being too small for the Door Distance From Edge setting
+        int minX = Mathf.Clamp(minDistanceFromEdge, 0, width - 1);
+        int maxX = Mathf.Clamp(width - minDistanceFromEdge, minX + 1, width);
 
         for (int x = minX; x < maxX; x++)
         {
             hallwayCandidates.Add(new Hallway(HallwayDirection.Bottom, new Vector2Int(x, 0)));
-            hallwayCandidates.Add(new Hallway(HallwayDirection.Top, new Vector2Int(x, bottom)));
+            hallwayCandidates.Add(new Hallway(HallwayDirection.Top, new Vector2Int(x, top)));
         }
+
+        int right = width - 1;
+
+        //int minY = minDistanceFromEdge;
+        //int maxY = length - minDistanceFromEdge;
+
+        //instead this to prevent small rooms being too small for the Door Distance From Edge setting
+        int minY = Mathf.Clamp(minDistanceFromEdge, 0, length - 1);
+        int maxY = Mathf.Clamp(length - minDistanceFromEdge, minY + 1, length);
 
         for (int y = minY; y < maxY; y++)
         {
