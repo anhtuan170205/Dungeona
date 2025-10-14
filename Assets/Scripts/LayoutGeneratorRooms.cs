@@ -23,7 +23,8 @@ public class LayoutGeneratorRooms : MonoBehaviour
         m_openDoorways = new List<Hallway>();
         m_level = new Level(m_levelConfig.Width, m_levelConfig.Length);
         RoomTemplate startRoomTemplate = m_availableRooms.Keys.ElementAt(m_random.Next(0, m_availableRooms.Count));
-        var roomRect = GetStartRoomRect(startRoomTemplate);
+        UseRoomTemplate(startRoomTemplate);
+        RectInt roomRect = GetStartRoomRect(startRoomTemplate);
         Room room = new Room(roomRect);
         List<Hallway> hallways = room.CalculateAllPossibleDoorways(room.Area.width, room.Area.height, m_levelConfig.DoorDistanceFromEdge);
         hallways.ForEach(h => h.StartRoom = room);
@@ -140,6 +141,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
         roomCandidateRect.position = roomCandidatePosition;
 
         if (!IsRoomCandidateValid(roomCandidateRect)) { return null; }
+        UseRoomTemplate(roomTemplate);
 
         Room newRoom = new Room(roomCandidateRect);
         selectedEntryway.EndRoom = newRoom;
@@ -149,7 +151,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
 
     private void AddRooms()
     {
-        while (m_openDoorways.Count > 0 && m_level.Rooms.Length < m_levelConfig.MaxRoomCount)
+        while (m_openDoorways.Count > 0 && m_level.Rooms.Length < m_levelConfig.MaxRoomCount && m_availableRooms.Count > 0)
         {
             Hallway selectedEntryway = m_openDoorways[m_random.Next(0, m_openDoorways.Count)];
             Room newRoom = ConstructAdjacentRoom(selectedEntryway);
@@ -168,6 +170,15 @@ public class LayoutGeneratorRooms : MonoBehaviour
 
             m_openDoorways.Remove(selectedEntryway);
             m_openDoorways.AddRange(newOpenHallways);
+        }
+    }
+
+    private void UseRoomTemplate(RoomTemplate roomTemplate)
+    {
+        m_availableRooms[roomTemplate]--;
+        if (m_availableRooms[roomTemplate] <= 0)
+        {
+            m_availableRooms.Remove(roomTemplate);
         }
     }
 
@@ -216,4 +227,5 @@ public class LayoutGeneratorRooms : MonoBehaviour
         }
         return false;
     }
+
 }

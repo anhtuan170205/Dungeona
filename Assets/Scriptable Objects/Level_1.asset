@@ -14,11 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_width: 64
   m_length: 64
-  m_minRoomWidth: 7
-  m_maxRoomWidth: 10
-  m_minRoomLength: 7
-  m_maxRoomLength: 10
-  m_doorDistanceFromEdge: 2
+  m_roomTemplates:
+  - m_name: SmallRoom
+    m_numberOfRooms: 10
+    m_minRoomWidth: 3
+    m_maxRoomWidth: 5
+    m_minRoomLength: 3
+    m_maxRoomLength: 5
+  - m_name: LargeRoom
+    m_numberOfRooms: 3
+    m_minRoomWidth: 10
+    m_maxRoomWidth: 15
+    m_minRoomLength: 10
+    m_maxRoomLength: 15
+  m_doorDistanceFromEdge: 1
   m_minHallwayLength: 3
   m_maxHallwayLength: 5
   m_maxRoomCount: 12
