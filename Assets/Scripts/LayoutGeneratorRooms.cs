@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using Random = System.Random;
 
+
+
 public class LayoutGeneratorRooms : MonoBehaviour
 {
     [SerializeField] private int m_seed = Environment.TickCount;
@@ -23,9 +25,8 @@ public class LayoutGeneratorRooms : MonoBehaviour
         m_openDoorways = new List<Hallway>();
         m_level = new Level(m_levelConfig.Width, m_levelConfig.Length);
         RoomTemplate startRoomTemplate = m_availableRooms.Keys.ElementAt(m_random.Next(0, m_availableRooms.Count));
-        UseRoomTemplate(startRoomTemplate);
         RectInt roomRect = GetStartRoomRect(startRoomTemplate);
-        Room room = new Room(roomRect);
+        Room room = CreateNewRoom(roomRect, startRoomTemplate);
         List<Hallway> hallways = room.CalculateAllPossibleDoorways(room.Area.width, room.Area.height, m_levelConfig.DoorDistanceFromEdge);
         hallways.ForEach(h => h.StartRoom = room);
         hallways.ForEach(h => m_openDoorways.Add(h));
@@ -52,12 +53,13 @@ public class LayoutGeneratorRooms : MonoBehaviour
 
     private RectInt GetStartRoomRect(RoomTemplate roomTemplate)
     {
-        int roomWidth = m_random.Next(roomTemplate.MinRoomWidth, roomTemplate.MaxRoomWidth);
+        RectInt roomSize = roomTemplate.GenerateRoomCandidateRect(m_random);
+        int roomWidth = roomSize.width;
         int availableWidthX = m_levelConfig.Width / 2 - roomWidth;
         int randomX = m_random.Next(0, availableWidthX);
         int roomX = randomX + (m_levelConfig.Width / 4);
 
-        int roomLength = m_random.Next(roomTemplate.MinRoomLength, roomTemplate.MaxRoomLength);
+        int roomLength = roomSize.height;
         int availableLengthY = m_levelConfig.Length / 2 - roomLength;
         int randomY = m_random.Next(0, availableLengthY);
         int roomY = randomY + (m_levelConfig.Length / 4);
@@ -74,7 +76,17 @@ public class LayoutGeneratorRooms : MonoBehaviour
         m_levelLayoutDisplay.transform.localScale = new Vector3(m_levelConfig.Width, m_levelConfig.Length, 1);
         layoutTexture.FillWithColor(Color.black);
 
-        Array.ForEach(m_level.Rooms, room => layoutTexture.DrawRectangle(room.Area, Color.white));
+        foreach (Room room in m_level.Rooms)
+        {
+            if (room.LayoutTexture != null)
+            {
+                layoutTexture.DrawTexture(room.LayoutTexture, room.Area);
+            }
+            else
+            {
+                layoutTexture.DrawRectangle(room.Area, Color.white);
+            }
+        }
         Array.ForEach(m_level.Hallways, hallway => layoutTexture.DrawLine(hallway.StartPositionAbsolute, hallway.EndPositionAbsolute, Color.white));
 
         if (isDebug)
@@ -128,11 +140,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
     private Room ConstructAdjacentRoom(Hallway selectedEntryway)
     {
         RoomTemplate roomTemplate = m_availableRooms.Keys.ElementAt(m_random.Next(0, m_availableRooms.Count));
-        RectInt roomCandidateRect = new RectInt
-        {
-            width = m_random.Next(roomTemplate.MinRoomWidth, roomTemplate.MaxRoomWidth),
-            height = m_random.Next(roomTemplate.MinRoomLength, roomTemplate.MaxRoomLength)
-        };
+        RectInt roomCandidateRect = roomTemplate.GenerateRoomCandidateRect(m_random);
         Hallway selectedExit = SelectHallwayCandidate(roomCandidateRect, selectedEntryway);
         if (selectedExit == null) { return null; }
 
@@ -141,9 +149,8 @@ public class LayoutGeneratorRooms : MonoBehaviour
         roomCandidateRect.position = roomCandidatePosition;
 
         if (!IsRoomCandidateValid(roomCandidateRect)) { return null; }
-        UseRoomTemplate(roomTemplate);
 
-        Room newRoom = new Room(roomCandidateRect);
+        Room newRoom = CreateNewRoom(roomCandidateRect, roomTemplate);
         selectedEntryway.EndRoom = newRoom;
         selectedEntryway.EndPosition = selectedExit.StartPosition;
         return newRoom;
@@ -179,6 +186,19 @@ public class LayoutGeneratorRooms : MonoBehaviour
         if (m_availableRooms[roomTemplate] <= 0)
         {
             m_availableRooms.Remove(roomTemplate);
+        }
+    }
+
+    private Room CreateNewRoom(RectInt roomCandidateRect, RoomTemplate roomTemplate)
+    {
+        UseRoomTemplate(roomTemplate);
+        if (roomTemplate.LayoutTexture == null)
+        {
+            return new Room(roomCandidateRect);
+        }
+        else
+        {
+            return new Room(roomCandidateRect.x, roomCandidateRect.y, roomTemplate.LayoutTexture);
         }
     }
 
