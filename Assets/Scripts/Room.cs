@@ -11,14 +11,23 @@ public class Room
     {
         m_area = area;
     }
-    
+
     public Room(int x, int y, Texture2D layoutTexture)
     {
         m_area = new RectInt(x, y, layoutTexture.width, layoutTexture.height);
         LayoutTexture = layoutTexture;
     }
-
+    
     public List<Hallway> CalculateAllPossibleDoorways(int width, int length, int minDistanceFromEdge)
+    {
+        if (LayoutTexture == null)
+        {
+            return CalculateAllPossibleDoorwaysForRectangularRooms(width, length, minDistanceFromEdge);
+        }
+        return CalculateAllPossibleDoorwaysForTexturedRooms(LayoutTexture);
+    }
+
+    public List<Hallway> CalculateAllPossibleDoorwaysForRectangularRooms(int width, int length, int minDistanceFromEdge)
     {
         List<Hallway> hallwayCandidates = new List<Hallway>();
         int top = length - 1;
@@ -44,5 +53,15 @@ public class Room
         }
 
         return hallwayCandidates;
+    }
+
+    public List<Hallway> CalculateAllPossibleDoorwaysForTexturedRooms(Texture2D layoutTexture)
+    {
+        List<Hallway> possibleHallwayPositions = new List<Hallway>();
+        Hallway testHallway = new Hallway(HallwayDirection.Bottom, Vector2Int.zero);
+        Hallway testHallway2 = new Hallway(HallwayDirection.Left, Vector2Int.zero);
+        possibleHallwayPositions.Add(testHallway);
+        possibleHallwayPositions.Add(testHallway2);
+        return possibleHallwayPositions;
     }
 }

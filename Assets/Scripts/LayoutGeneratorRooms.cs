@@ -103,9 +103,9 @@ public class LayoutGeneratorRooms : MonoBehaviour
         layoutTexture.SaveAsset();
     }
 
-    private Hallway SelectHallwayCandidate(RectInt roomCandidateRect, Hallway entryway)
+    private Hallway SelectHallwayCandidate(RectInt roomCandidateRect, RoomTemplate roomTemplate, Hallway entryway)
     {
-        Room room = new Room(roomCandidateRect);
+        Room room = CreateNewRoom(roomCandidateRect, roomTemplate, false);
         List<Hallway> hallwayCandidates = room.CalculateAllPossibleDoorways(room.Area.width, room.Area.height, m_levelConfig.DoorDistanceFromEdge);
         HallwayDirection requiredDirection = entryway.StartDirection.GetOppositeDirection();
         List<Hallway> filteredHallwayCandidates = hallwayCandidates.Where(hallwayCandidate => hallwayCandidate.StartDirection == requiredDirection).ToList();
@@ -141,7 +141,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
     {
         RoomTemplate roomTemplate = m_availableRooms.Keys.ElementAt(m_random.Next(0, m_availableRooms.Count));
         RectInt roomCandidateRect = roomTemplate.GenerateRoomCandidateRect(m_random);
-        Hallway selectedExit = SelectHallwayCandidate(roomCandidateRect, selectedEntryway);
+        Hallway selectedExit = SelectHallwayCandidate(roomCandidateRect, roomTemplate, selectedEntryway);
         if (selectedExit == null) { return null; }
 
         int distance = m_random.Next(m_levelConfig.MinHallwayLength, m_levelConfig.MaxHallwayLength + 1);
@@ -189,9 +189,13 @@ public class LayoutGeneratorRooms : MonoBehaviour
         }
     }
 
-    private Room CreateNewRoom(RectInt roomCandidateRect, RoomTemplate roomTemplate)
+    private Room CreateNewRoom(RectInt roomCandidateRect, RoomTemplate roomTemplate, bool useUp = true)
     {
-        UseRoomTemplate(roomTemplate);
+        if (useUp)
+        {
+            UseRoomTemplate(roomTemplate);
+        }
+        
         if (roomTemplate.LayoutTexture == null)
         {
             return new Room(roomCandidateRect);
