@@ -88,6 +88,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
             }
         }
         Array.ForEach(m_level.Hallways, hallway => layoutTexture.DrawLine(hallway.StartPositionAbsolute, hallway.EndPositionAbsolute, Color.white));
+        layoutTexture.ConvertToBlackAndWhite();
 
         if (isDebug)
         {
@@ -142,6 +143,20 @@ public class LayoutGeneratorRooms : MonoBehaviour
         RoomTemplate roomTemplate = m_availableRooms.Keys.ElementAt(m_random.Next(0, m_availableRooms.Count));
         RectInt roomCandidateRect = roomTemplate.GenerateRoomCandidateRect(m_random);
         Hallway selectedExit = SelectHallwayCandidate(roomCandidateRect, roomTemplate, selectedEntryway);
+        if (selectedExit == null && m_availableRooms.Count > 0)
+        {
+            for (int r = 0; r < m_availableRooms.Count; r++)
+            {
+                roomTemplate = m_availableRooms.Keys.ElementAt(m_random.Next(0, m_availableRooms.Count));
+                roomCandidateRect = roomTemplate.GenerateRoomCandidateRect(m_random);
+                selectedExit = SelectHallwayCandidate(roomCandidateRect, roomTemplate, selectedEntryway);
+
+                if (selectedExit != null)
+                {
+                    break;
+                }
+            }
+        }
         if (selectedExit == null) { return null; }
 
         int distance = m_random.Next(m_levelConfig.MinHallwayLength, m_levelConfig.MaxHallwayLength + 1);
