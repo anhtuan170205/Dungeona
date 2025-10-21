@@ -12,9 +12,20 @@ public class MarchingSquares : MonoBehaviour
             string row = "";
             for (int x = 0; x < level.Width - 1; x++)
             {
-                row += level.IsBlocked(x, y) ? "0" : "";
+                int tileIndex = CalculateTileIndex(level, x, y);
+                row += tileIndex.ToString("00") + " ";
             }
             Debug.Log(row);
         }
+    }
+
+    private int CalculateTileIndex(ILevel level, int x, int y)
+    {
+        int topLeft = level.IsBlocked(x, y + 1) ? 1 : 0;
+        int topRight = level.IsBlocked(x + 1, y + 1) ? 1 : 0;
+        int bottomLeft = level.IsBlocked(x, y) ? 1 : 0;
+        int bottomRight = level.IsBlocked(x + 1, y) ? 1 : 0;
+        int tileIndex = topLeft + (topRight << 1) + (bottomRight << 2) + (bottomLeft << 3);
+        return tileIndex;
     }
 }
