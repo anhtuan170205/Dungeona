@@ -14,7 +14,7 @@ public class SharedLevelData : MonoBehaviour
     public Random Rand => m_random;
 
     [ContextMenu("Generate New Seed")]
-    public void GenerateNewSeed()
+    public void GenerateSeed()
     {
         m_seed = Environment.TickCount;
         m_random = new Random(m_seed);

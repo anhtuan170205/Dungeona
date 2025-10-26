@@ -5,13 +5,13 @@ public class MarchingSquares : MonoBehaviour
     [SerializeField] private Texture2D m_levelTexture;
     [SerializeField] private GameObject m_generatedLevel;
     [SerializeField] private Tileset m_tileset;
-    [SerializeField] private int m_scale = 1;
 
     [ContextMenu("Create Level Geometry")]
     public void CreateLevelGeometry()
     {
         m_generatedLevel.transform.DestroyAllChildren();
-        Vector3 scaleVector = new Vector3(m_scale, m_scale, m_scale);
+        int scale = SharedLevelData.Instance.Scale;
+        Vector3 scaleVector = new Vector3(scale, scale, scale);
         TextureBasedLevel level = new TextureBasedLevel(m_levelTexture);
         for (int y = 0; y < level.Length - 1; y++)
         {
@@ -22,7 +22,7 @@ public class MarchingSquares : MonoBehaviour
                 if (tilePrefab == null) { continue; }
                 GameObject tileInstance = Instantiate(tilePrefab, m_generatedLevel.transform);
                 tileInstance.transform.localScale = scaleVector;
-                tileInstance.transform.position = new Vector3(x * m_scale, 0, y * m_scale);
+                tileInstance.transform.position = new Vector3(x * scale, 0, y * scale);
                 string tileName = "x " + x + " y " + y + " (Index " + tileIndex + ")";
                 tileInstance.name = tileName;
             }

@@ -4,13 +4,18 @@ using UnityEngine;
 public class Tileset : ScriptableObject
 {
     [SerializeField] Color wallColor;
-    [SerializeField] GameObject[] tiles = new GameObject[16];
+    [SerializeField] TileVariant[] tiles = new TileVariant[16];
 
     public Color WallColor => wallColor;
 
     public GameObject GetTile(int tileIndex)
     {
         if (tileIndex < 0 || tileIndex >= tiles.Length) { return null; }
-        return tiles[tileIndex];
+        var tile = tiles[tileIndex].GetRandomTile();
+        if (tile == null)
+        {
+            Debug.LogWarning("Tile variant not found for index: " + tileIndex, this);
+        }
+        return tile;
     }
 }
