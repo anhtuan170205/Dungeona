@@ -4,13 +4,13 @@ using System;
 using System.Linq;
 using Random = System.Random;
 
-
-
 public class LayoutGeneratorRooms : MonoBehaviour
 {
     [SerializeField] private LevelLayoutConfigurationSO m_levelConfig;
     [SerializeField] private GameObject m_levelLayoutDisplay;
     [SerializeField] private List<Hallway> m_openDoorways;
+    const int MAX_ATTEMPTS = 20;
+    const int MIN_ROOMS_REQUIRED = 10;
 
     private Random m_random;
     private Level m_level;
@@ -19,23 +19,40 @@ public class LayoutGeneratorRooms : MonoBehaviour
     [ContextMenu("Generate Level Layout")]
     public void GenerateLevel()
     {
-        SharedLevelData.Instance.ResetRandom();
-        m_random = SharedLevelData.Instance.Rand;
-        m_availableRooms = m_levelConfig.GetAvailableRooms();
-        m_openDoorways = new List<Hallway>();
-        m_level = new Level(m_levelConfig.Width, m_levelConfig.Length);
-        RoomTemplate startRoomTemplate = m_availableRooms.Keys.ElementAt(m_random.Next(0, m_availableRooms.Count));
-        RectInt roomRect = GetStartRoomRect(startRoomTemplate);
-        Room room = CreateNewRoom(roomRect, startRoomTemplate);
-        List<Hallway> hallways = room.CalculateAllPossibleDoorways(room.Area.width, room.Area.height, m_levelConfig.DoorDistanceFromEdge);
-        hallways.ForEach(h => h.StartRoom = room);
-        hallways.ForEach(h => m_openDoorways.Add(h));
-        m_level.AddRoom(room);
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
+        {
+            // --- build attempt ---
+            SharedLevelData.Instance.ResetRandom();
+            m_random = SharedLevelData.Instance.Rand;
+            m_availableRooms = m_levelConfig.GetAvailableRooms();
+            m_openDoorways = new List<Hallway>();
+            m_level = new Level(m_levelConfig.Width, m_levelConfig.Length);
 
-        Hallway selectedEntryway = m_openDoorways[m_random.Next(m_openDoorways.Count)];
-        AddRooms();
+            RoomTemplate startRoomTemplate = m_availableRooms.Keys.ElementAt(m_random.Next(0, m_availableRooms.Count));
+            RectInt roomRect = GetStartRoomRect(startRoomTemplate);
+            Room room = CreateNewRoom(roomRect, startRoomTemplate);
 
-        DrawLayout(selectedEntryway, roomRect);
+            List<Hallway> hallways = room.CalculateAllPossibleDoorways(room.Area.width, room.Area.height, m_levelConfig.DoorDistanceFromEdge);
+            hallways.ForEach(h => h.StartRoom = room);
+            hallways.ForEach(h => m_openDoorways.Add(h));
+            m_level.AddRoom(room);
+
+            Hallway selectedEntryway = m_openDoorways[m_random.Next(m_openDoorways.Count)];
+            AddRooms(); 
+
+            // --- check constraint ---
+            int roomCount = m_level.Rooms.Length;
+            if (roomCount >= MIN_ROOMS_REQUIRED)
+            {
+                Debug.Log($"Layout accepted on attempt {attempt + 1} with {roomCount} rooms.");
+                DrawLayout(selectedEntryway, roomRect);
+                return;
+            }
+            
+            SharedLevelData.Instance.GenerateSeed();
+            Debug.LogWarning($"Attempt {attempt + 1} rejected: only {roomCount} rooms.");
+        }
+        Debug.LogError($"Failed to generate a valid layout (>= {MIN_ROOMS_REQUIRED} rooms) after max attempts.");
     }
 
     [ContextMenu("Generate new Seed")]
