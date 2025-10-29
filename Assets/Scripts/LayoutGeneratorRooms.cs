@@ -17,7 +17,7 @@ public class LayoutGeneratorRooms : MonoBehaviour
     private Dictionary<RoomTemplate, int> m_availableRooms;
 
     [ContextMenu("Generate Level Layout")]
-    public void GenerateLevel()
+    public Level GenerateLevel()
     {
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
         {
@@ -46,13 +46,17 @@ public class LayoutGeneratorRooms : MonoBehaviour
             {
                 Debug.Log($"Layout accepted on attempt {attempt + 1} with {roomCount} rooms.");
                 DrawLayout(selectedEntryway, roomRect);
-                return;
+                int startRoomIndex = m_random.Next(0, m_level.Rooms.Length);
+                Room startRoom = m_level.Rooms[startRoomIndex];
+                m_level.StartRoom = startRoom;
+                return m_level;
             }
-            
+
             SharedLevelData.Instance.GenerateSeed();
             Debug.LogWarning($"Attempt {attempt + 1} rejected: only {roomCount} rooms.");
         }
         Debug.LogError($"Failed to generate a valid layout (>= {MIN_ROOMS_REQUIRED} rooms) after max attempts.");
+        return m_level;
     }
 
     [ContextMenu("Generate new Seed")]

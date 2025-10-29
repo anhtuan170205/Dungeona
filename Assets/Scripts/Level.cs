@@ -13,6 +13,7 @@ public class Level
 
     public Room[] Rooms => m_rooms.ToArray();
     public Hallway[] Hallways => m_hallways.ToArray();
+    public Room StartRoom { get;  set; }
 
     public Level(int width, int length)
     {
