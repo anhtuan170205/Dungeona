@@ -3,9 +3,9 @@ using Unity.AI.Navigation;
 
 public class LevelBuilder : MonoBehaviour
 {
-    [SerializeField] private LayoutGeneratorRooms m_layoutGenerator;
-    [SerializeField] private MarchingSquares m_marchingSquares;
-    [SerializeField] private NavMeshSurface m_navMeshSurface;
+    [SerializeField] private LayoutGeneratorRooms _layoutGenerator;
+    [SerializeField] private MarchingSquares _marchingSquares;
+    [SerializeField] private NavMeshSurface _navMeshSurface;
 
     private void Start()
     {
@@ -22,16 +22,25 @@ public class LevelBuilder : MonoBehaviour
     [ContextMenu("Build Level")]
     public void BuildLevel()
     {
-        Level level = m_layoutGenerator.GenerateLevel();
-        m_marchingSquares.CreateLevelGeometry();
-        m_navMeshSurface.BuildNavMesh();
+        Level level = _layoutGenerator.GenerateLevel();
+        _marchingSquares.CreateLevelGeometry();
+        _navMeshSurface.BuildNavMesh();
 
         Room startRoom = level.StartRoom;
         Vector2 roomCenter = startRoom.Area.center;
         Vector3 playerStartPosition = LevelToWorldPosition(roomCenter);
 
         GameObject player = GameObject.FindWithTag("Player");
-        player.transform.position = playerStartPosition;
+        UnityEngine.AI.NavMeshAgent playerNavMeshAgent = player.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (playerNavMeshAgent == null)
+        {
+            player.transform.position = playerStartPosition;
+        }
+        else
+        {
+            playerNavMeshAgent.Warp(playerStartPosition);
+        }
+
     }
     
     public Vector3 LevelToWorldPosition(Vector2 levelPosition)
