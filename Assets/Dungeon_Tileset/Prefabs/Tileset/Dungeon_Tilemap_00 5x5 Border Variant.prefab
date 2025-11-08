@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2742276758316262783, guid: ed3655b1ce5aa374ab91a0989e8d035e, type: 3}
@@ -56,8 +57,15 @@ PrefabInstance:
       value: Dungeon_Tilemap_00 5x5 Border Variant
       objectReference: {fileID: 0}
     - target: {fileID: 3910719808259218960, guid: ed3655b1ce5aa374ab91a0989e8d035e, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3910719808259218960, guid: ed3655b1ce5aa374ab91a0989e8d035e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 49b2bbf484a9027458a7988679d7e322, type: 2}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed3655b1ce5aa374ab91a0989e8d035e, type: 3}
