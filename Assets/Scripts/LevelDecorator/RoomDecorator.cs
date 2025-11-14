@@ -5,6 +5,8 @@ public class RoomDecorator : MonoBehaviour
 {
     [SerializeField] private GameObject _parent;
     [SerializeField] private LayoutGeneratorRooms _layoutGenerator;
+    [SerializeField] private Texture2D _levelTexture;
+    [SerializeField] private Texture2D _decoratedTexture;
 
     private Random _random;
 
@@ -31,7 +33,52 @@ public class RoomDecorator : MonoBehaviour
         {
             decorationsTransform.DestroyAllChildren();
         }
-        GameObject testGameObject = new GameObject("TestObject");
-        testGameObject.transform.SetParent(decorationsTransform);
+
+        TileType[,] levelDecorated = InitializeDecoratorArray(level);
+        GenerateTextureFromTileType(levelDecorated);
+    }
+
+    private TileType[,] InitializeDecoratorArray(Level level)
+    {
+        TextureBasedLevel textureBasedLevel = new TextureBasedLevel(_levelTexture);
+        TileType[,] levelDecorated = new TileType[level.Width, level.Length];
+
+        for (int y = 0; y < _levelTexture.height; y++)
+        {
+            for (int x = 0; x < _levelTexture.width; x++)
+            {
+                bool isBlocked = textureBasedLevel.IsBlocked(x, y);
+                if (isBlocked)
+                {
+                    levelDecorated[x, y] = TileType.Wall;
+                }
+                else
+                {
+                    levelDecorated[x, y] = TileType.Floor;
+                }
+            }
+        }
+        return levelDecorated;
+    }
+
+    private void GenerateTextureFromTileType(TileType[,] tileTypes)
+    {
+        int width = tileTypes.GetLength(0);
+        int height = tileTypes.GetLength(1);
+
+        Color32[] pixels = new Color32[width * height];
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                pixels[y * width + x] = tileTypes[x, y].GetColor();
+            }
+        }
+
+        _decoratedTexture.Reinitialize(width, height);
+        _decoratedTexture.SetPixels32(pixels);
+        _decoratedTexture.Apply();
+        _decoratedTexture.SaveAsset();
     }
 }
