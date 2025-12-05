@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 public class Room
 {
-    private RectInt m_area;
-    public RectInt Area => m_area;
+    private RectInt _area;
+    public RectInt Area => _area;
     public Texture2D LayoutTexture { get; }
 
     public Room(RectInt area)
     {
-        m_area = area;
+        _area = area;
     }
 
     public Room(int x, int y, Texture2D layoutTexture)
     {
-        m_area = new RectInt(x, y, layoutTexture.width, layoutTexture.height);
+        _area = new RectInt(x, y, layoutTexture.width, layoutTexture.height);
         LayoutTexture = layoutTexture;
     }
     

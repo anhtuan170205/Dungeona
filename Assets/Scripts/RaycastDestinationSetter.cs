@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class RaycastDestinationSetter : MonoBehaviour
 {
-    [SerializeField] DirectedAgent directedAgent;
+    [SerializeField] private DirectedAgent _directedAgent;
     private void Update()
     {
         if (Mouse.current.leftButton.isPressed)
@@ -12,7 +12,7 @@ public class RaycastDestinationSetter : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
                 Vector3 destination = hitInfo.point;
-                directedAgent.GoToLocation(destination);
+                _directedAgent.GoToLocation(destination);
             }
         }
     }

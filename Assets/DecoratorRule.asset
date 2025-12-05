@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d7436b7f53fc40a996b9e0820d16fc3, type: 3}
+  m_Name: DecoratorRule
+  m_EditorClassIdentifier: Assembly-CSharp::PatternMatchingDecoratorRule
+  _prefab: {fileID: 0}
+  _placement:
+    array: 02000000020000000200000002000000
+    width: 2
+    height: 2
+  _fill:
+    array: 
+    width: 0
+    height: 0
